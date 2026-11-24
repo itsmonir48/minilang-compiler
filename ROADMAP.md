@@ -1,7 +1,7 @@
 # MiniLang Compiler & Parser Workbench — Project Roadmap
 
 Course: CIT 412 Compiler Design and Automata Theory Sessional
-Language: Python 3 (standard library + `pytest`; `ply` only for Phase 7)
+Language: Python 3 (standard library + `pytest`; `streamlit` for the web interface; `ply` only for Phase 7)
 
 ---
 
@@ -19,6 +19,10 @@ Next to the compiler, build a **Grammar Workbench**. It reads any grammar from a
 text file and shows the Chapter 4 algorithms step by step: left recursion
 removal, left factoring, FIRST/FOLLOW, LL(1) table, SLR / CLR / LALR tables,
 conflicts and parse traces.
+
+Everything runs in a **web interface (MiniLang Compiler Studio, Streamlit)**: write
+code in the browser and see tokens, trees, tables and step-by-step traces as
+pictures. The same engine also has a command-line interface, which the tests use.
 
 So the project is **one connected tool**, not a set of separate exercise files.
 Every lab topic from the question files is one module in it (see Section 9).
@@ -106,6 +110,8 @@ MiniLang_Compiler/
 │   │   ├── lr_parser.py     shared LR driver with trace + precedence rules (4.8)
 │   │   ├── bottomup.py      shift-reduce visualizer: handles, tree from leaves up (4.5–4.7)
 │   └── cli.py               command-line entry point
+├── app/                     web interface (Streamlit): Home.py, pages/, diagrams.py, ui_common.py
+├── .streamlit/config.toml   theme
 ├── lex/                     Flex programs (3.5) + Makefile; built into lex/build/
 ├── scripts/                 buffer_experiment.py → docs/buffer_experiment.md
 ├── yacc_calc/
@@ -121,7 +127,20 @@ MiniLang_Compiler/
 
 ## 4. Phases
 
-Each phase ends with: code + tests passing + one git commit (+ push).
+Each phase ends with: code + **its page in the web interface** + tests passing
+(including an AppTest smoke test of the page) + one git commit (+ push).
+
+Web pages per phase:
+
+| Phase | Page |
+|---|---|
+| 1 | Lexer (token table, highlighted source, transition-diagram path, buffer pair) · Strings & Regex |
+| 2 | Translators (infix/prefix/postfix, Roman numerals, annotated parse tree) |
+| 3 | Grammar Workbench (left recursion, left factoring, FIRST/FOLLOW, LL(1) table) · Top-down parsing (animated) |
+| 3.5 | Parse Tree (expression → tree, derivations, AST beside it) |
+| 4–5 | Compiler (AST, errors, symbol table scopes, TAC, run output) |
+| 6 | Bottom-up parsing (LR items, SLR/CLR/LALR tables, animated shift-reduce) · Top-down vs bottom-up |
+| 7 | Yacc calculator |
 Do not start the next phase until the current one works.
 
 ### Phase 0 — Setup (1 day)
@@ -148,6 +167,7 @@ Do not start the next phase until the current one works.
 - [x] `lex/minilang.l`: Flex scanner for MiniLang (token name + attribute), built with `make -C lex`; a test checks that it gives the same tokens and positions as `lexer.py` (skipped without flex)
 - [x] Small Flex programs (3.5): `wc.l` (chars/words/lines), `numbers.l` (spell out digits), `urls_emails.l` (extract URLs/emails), `strip_comments.l` (remove C/C++ comments)
 - [x] CLI: `tokens file.mini [--buffer-size N] [--stats] [--md]`, `strings abc`, `regex [name] [strings...]`
+- [x] Web pages: Lexer, Strings & Regex; `minilang ui` starts the interface
 - [x] Tests: every token type, line/col tracking, buffer reload at the boundary, errors
 
 ### Phase 2 — Ch 2 translators (2–3 days)
@@ -233,6 +253,7 @@ User gives an expression such as `a + b * (c - 2)`; the tool prints its **parse 
   - `repl`: interactive mode; type a statement or expression, see tokens / tree / TAC / result at once
   - global flag `--md`: print any table or trace as Markdown, ready to paste into the report
 - [ ] `demo.sh`: runs every demo command in order with a heading for each (one command for the viva)
+- [ ] Web interface: Home page pipeline shows every stage green; "Run" page with the whole pipeline on one screen
 - [ ] `docs/lab_mapping.md`: every bullet in the three question files → file + function + demo command
 - [ ] `README.md` + `docs/report.md` (screenshots / outputs of each command)
 - [ ] Final run of all tests; tag `v1.0` on GitHub
@@ -271,6 +292,7 @@ The phase estimates add up to about 30 working days.
 - The same grammar shows SLR, CLR and LALR tables plus a state-count comparison.
 - All tests pass locally and on GitHub Actions; every question topic is listed in `docs/lab_mapping.md`.
 - `./demo.sh` runs from start to end without an error.
+- `minilang ui` opens the web interface and every page works on every example program.
 
 ## 8. Optional extras (only if time remains)
 

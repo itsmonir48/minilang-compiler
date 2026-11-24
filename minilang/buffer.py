@@ -141,6 +141,17 @@ class BufferPair:
             i += 1
         return "".join(out)
 
+    def snapshot(self) -> dict:
+        """Copy of the buffer state, used by the UI to draw the buffer pair."""
+        return {
+            "n": self.n,
+            "buf": list(self.buf),
+            "lexeme_begin": self.lexeme_begin,
+            "forward": self.forward,
+            "half_chunk": list(self.half_chunk),
+            "reloads": self.reloads,
+        }
+
     # --------------------------------------------------------------- position
     def line_col(self, offset: int | None = None) -> tuple[int, int]:
         """1-based (line, column) of an absolute offset (default: `forward`)."""

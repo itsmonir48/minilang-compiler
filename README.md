@@ -24,6 +24,7 @@ python3 -m venv .venv
 ## Try it
 
 ```bash
+minilang ui                                      # web interface in the browser (MiniLang Compiler Studio)
 minilang tokens examples/factorial.mini          # Lexeme | Token | Attribute table
 minilang tokens examples/lexer_errors.mini       # 4 lexical errors with line:col
 minilang tokens --buffer-size 8 --stats examples/scopes.mini
@@ -38,7 +39,8 @@ python scripts/buffer_experiment.py              # writes docs/buffer_experiment
 
 | Path | Contents |
 |---|---|
-| `minilang/` | the compiler and workbench package |
+| `minilang/` | the compiler and workbench package (engine) |
+| `app/` | web interface (Streamlit), started with `minilang ui` |
 | `examples/` | sample `.mini` programs; `*.expected` holds the expected output of valid programs |
 | `tests/` | pytest tests; `tests/expected/` holds golden outputs (`pytest --update-golden` rewrites them) |
 | `grammars/` | grammar files for the workbench |

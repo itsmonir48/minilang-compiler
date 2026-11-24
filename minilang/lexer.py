@@ -73,6 +73,9 @@ class Lexer:
         self.names = NameTable()
         self.errors = ErrorList()
         self._done = False
+        # states visited by the transition diagram for the last token (for the UI);
+        # ids use 9-11, numbers 12-21 (textbook numbering), relops r0-r12
+        self.path: list[object] = []
 
     # ------------------------------------------------------------ public API
     def next_token(self) -> Token:
@@ -113,6 +116,7 @@ class Lexer:
         buf = self.buf
         while True:
             buf.begin_lexeme()
+            self.path = []
             c = buf.next_char()
             if c == "":
                 self._done = True
@@ -174,7 +178,9 @@ class Lexer:
     def _id_or_keyword(self) -> Token:
         buf = self.buf
         state = 10                       # state 9 --letter--> 10
+        self.path = [9]
         while True:
+            self.path.append(state)
             if state == 10:
                 c = buf.next_char()
                 if is_letter(c) or is_digit(c):
@@ -192,7 +198,9 @@ class Lexer:
     def _number(self) -> Token | None:
         buf = self.buf
         state = 13                       # state 12 --digit--> 13
+        self.path = [12]
         while True:
+            self.path.append(state)
             c = buf.next_char() if state not in (19, 20, 21) else None
             if state == 13:              # integer part
                 if is_digit(c):
@@ -248,26 +256,31 @@ class Lexer:
     def _relop(self, first: str) -> Token:
         buf = self.buf
         c = buf.next_char()
+        # state numbers of the relop diagram (see RELOP_STATES below)
+        mid = {"<": "r1", ">": "r4", "=": "r7", "!": "r10"}[first]
         if first == "<":
             if c == "=":
-                return self._make(TokenType.RELOP, "<=", LE)
-            buf.retract()
-            return self._make(TokenType.RELOP, "<", LT)
+                return self._relop_done(mid, "r2", TokenType.RELOP, "<=", LE)
+            return self._relop_done(mid, "r3", TokenType.RELOP, "<", LT, retract=True)
         if first == ">":
             if c == "=":
-                return self._make(TokenType.RELOP, ">=", GE)
-            buf.retract()
-            return self._make(TokenType.RELOP, ">", GT)
+                return self._relop_done(mid, "r5", TokenType.RELOP, ">=", GE)
+            return self._relop_done(mid, "r6", TokenType.RELOP, ">", GT, retract=True)
         if first == "=":
             if c == "=":
-                return self._make(TokenType.RELOP, "==", EQ)
-            buf.retract()
-            return self._make(TokenType.ASSIGN, "=")
+                return self._relop_done(mid, "r8", TokenType.RELOP, "==", EQ)
+            return self._relop_done(mid, "r9", TokenType.ASSIGN, "=", retract=True)
         # first == "!"
         if c == "=":
-            return self._make(TokenType.RELOP, "!=", NE)
-        buf.retract()
-        return self._make(TokenType.NOT, "!")
+            return self._relop_done(mid, "r11", TokenType.RELOP, "!=", NE)
+        return self._relop_done(mid, "r12", TokenType.NOT, "!", retract=True)
+
+    def _relop_done(self, mid: str, final: str, ttype: TokenType, lexeme: str,
+                    value: object = None, retract: bool = False) -> Token:
+        if retract:                      # '*' state: the lookahead is not part of the token
+            self.buf.retract()
+        self.path = ["r0", mid, final]
+        return self._make(ttype, lexeme, value)
 
     def _logical(self, first: str) -> Token | None:
         c = self.buf.next_char()

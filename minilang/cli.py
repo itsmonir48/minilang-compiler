@@ -98,6 +98,23 @@ def cmd_regex(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_ui(args: argparse.Namespace) -> int:
+    """Start the Streamlit web interface."""
+    import subprocess
+
+    home = Path(__file__).resolve().parent.parent / "app" / "Home.py"
+    if not home.exists():
+        print(f"minilang: web interface not found at {home}", file=sys.stderr)
+        return 2
+    cmd = [sys.executable, "-m", "streamlit", "run", str(home), "--server.port", str(args.port)]
+    if args.headless:
+        cmd += ["--server.headless", "true"]
+    try:
+        return subprocess.call(cmd)
+    except KeyboardInterrupt:
+        return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="minilang",
@@ -124,6 +141,11 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("strings", nargs="*")
     p.add_argument("--md", action="store_true", help="print tables as Markdown")
     p.set_defaults(func=cmd_regex)
+
+    p = sub.add_parser("ui", help="open the web interface in the browser")
+    p.add_argument("--port", type=int, default=8501)
+    p.add_argument("--headless", action="store_true", help="do not open a browser")
+    p.set_defaults(func=cmd_ui)
     return parser
 
 

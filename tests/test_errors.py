@@ -49,3 +49,9 @@ def test_error_list():
         "error[parser] line 1, col 1: a",
         "error[parser] line 2, col 1: b",
     ]
+
+
+def test_pickle_round_trip():
+    import pickle
+    e = CompileError("lexer", "illegal character '@'", 3, 7)
+    assert pickle.loads(pickle.dumps(e)) == e

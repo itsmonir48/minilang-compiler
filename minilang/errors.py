@@ -21,6 +21,10 @@ class CompileError(Exception):
     def __post_init__(self) -> None:
         super().__init__(self.message)
 
+    def __reduce__(self):
+        # Exception pickling only keeps args=(message,); keep every field
+        return (CompileError, (self.kind, self.message, self.line, self.col))
+
     def format(self, source: str | None = None) -> str:
         """Return the message; if the source text is given, add the line and a caret."""
         if self.line <= 0:
