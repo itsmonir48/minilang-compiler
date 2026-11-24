@@ -9,7 +9,7 @@ with step-by-step top-down and bottom-up parse traces.
 
 CIT 412 Compiler Design and Automata Theory Sessional.
 
-Status: Phase 3 (grammar workbench and top-down parsing) done. See [ROADMAP.md](ROADMAP.md).
+Status: Phase 3.5 (expression → parse tree) done. See [ROADMAP.md](ROADMAP.md).
 
 ## Setup
 
@@ -42,6 +42,8 @@ minilang derive expr_ambiguous 'id+id*id'           # 2 parse trees: ambiguous
 minilang derive ab_equal --language 4               # strings of L(G) up to length 4
 minilang topdown backtrack cad --method backtrack   # try, fail, backtrack
 minilang topdown expr_ll1 'id+id*id'                # Stack | Input | Action
+minilang parsetree 'a + b * (c - 2)' --all         # parse tree, derivations, AST
+minilang parsetree '9-5+2' --dot tree.dot           # Graphviz file (add --png if dot is installed)
 make -C lex demo                                 # Flex programs (needs flex + gcc)
 python scripts/buffer_experiment.py              # writes docs/buffer_experiment.md
 ```

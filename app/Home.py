@@ -60,6 +60,9 @@ PAGES = [
     ("pages/5_Top_Down_Parsing.py", "Top-Down Parsing", "🌳",
      "Backtracking, predictive and table-driven LL(1) parsing step by step, with the parse "
      "tree growing from the root down."),
+    ("pages/6_Parse_Tree.py", "Parse Tree", "🌲",
+     "Expression → parse tree and syntax tree side by side, leftmost and rightmost "
+     "derivations step by step."),
 ]
 for i in range(0, len(PAGES), 3):
     cols = st.columns(3)

@@ -365,6 +365,46 @@ def cmd_topdown(args: argparse.Namespace) -> int:
     return 1
 
 
+def cmd_parsetree(args: argparse.Namespace) -> int:
+    """Expression → parse tree, derivations, AST, Graphviz file (2.2, 4.1, 4.2)."""
+    import shutil
+    import subprocess
+
+    from minilang.errors import CompileError
+    from minilang.parse_tree import EXPR_GRAMMAR, derivation_lines, parse_expression
+    from minilang.tree import render_ascii, to_dot
+
+    try:
+        r = parse_expression(args.expr)
+    except CompileError as e:
+        print(e.format(args.expr), file=sys.stderr)
+        return 1
+    show_all = args.all
+    print(f"grammar:\n{EXPR_GRAMMAR.to_text()}\n")
+    print("parse tree:")
+    print(render_ascii(r.tree, attrs=False))
+    if args.derivations or show_all:
+        print("\nleftmost derivation:")
+        print("    " + "\n⇒lm ".join(derivation_lines(r.tree)))
+        print("\nrightmost derivation:")
+        print("    " + "\n⇒rm ".join(derivation_lines(r.tree, rightmost=True)))
+    if args.ast or show_all:
+        print("\nsyntax tree (AST):")
+        print(render_ascii(r.ast, attrs=False))
+    if args.dot:
+        Path(args.dot).write_text(to_dot(r.tree, attrs=False) + "\n", encoding="utf-8")
+        print(f"\nwrote {args.dot}")
+        if args.png:
+            if shutil.which("dot") is None:
+                print("Graphviz 'dot' is not installed, so no PNG was made "
+                      "(the .dot file can be opened in any Graphviz viewer)", file=sys.stderr)
+            else:
+                png = str(Path(args.dot).with_suffix(".png"))
+                subprocess.run(["dot", "-Tpng", args.dot, "-o", png], check=True)
+                print(f"wrote {png}")
+    return 0
+
+
 def cmd_ui(args: argparse.Namespace) -> int:
     """Start the Streamlit web interface."""
     import subprocess
@@ -460,6 +500,17 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--method", choices=["backtrack", "predictive", "ll1"], default="ll1")
     p.add_argument("--md", action="store_true", help="print tables as Markdown")
     p.set_defaults(func=cmd_topdown)
+
+    p = sub.add_parser("parsetree", help="expression -> parse tree (2.2, 4.1, 4.2)")
+    p.add_argument("expr", help="e.g. 'a + b * (c - 2)' (quote it in the shell)")
+    p.add_argument("--derivations", action="store_true",
+                   help="also print the leftmost and rightmost derivations")
+    p.add_argument("--ast", action="store_true", help="also print the syntax tree")
+    p.add_argument("--all", action="store_true", help="tree, derivations and AST")
+    p.add_argument("--dot", metavar="FILE", help="write the tree as a Graphviz .dot file")
+    p.add_argument("--png", action="store_true",
+                   help="with --dot: also make a PNG if Graphviz 'dot' is installed")
+    p.set_defaults(func=cmd_parsetree)
 
     p = sub.add_parser("ui", help="open the web interface in the browser")
     p.add_argument("--port", type=int, default=8501)

@@ -196,18 +196,19 @@ Do not start the next phase until the current one works.
 
 ### Phase 3.5 — Expression → Parse Tree generator (Ch 2.2, 4.1, 4.2) (1–2 days)
 User gives an expression such as `a + b * (c - 2)`; the tool prints its **parse tree**.
-- [ ] `parse_tree.py`: `ParseNode(symbol, children)`; leaves are terminals with their lexeme (`id (a)`, `num (2)`)
-- [ ] Expression is tokenized with the Phase 1 lexer, then parsed with the standard grammar
+- [x] `parse_tree.py`: `ParseNode(symbol, children)`; leaves are terminals with their lexeme (`id (a)`, `num (2)`)
+- [x] Expression is tokenized with the Phase 1 lexer, then parsed with the standard grammar
       `E → E + T | E - T | T`, `T → T * F | T / F | F`, `F → ( E ) | id | num`
       (recursive descent on the left-recursion-free form, but the tree is rebuilt in the original left-recursive shape so it matches the textbook)
-- [ ] (Trees for other grammars come from `topdown` and `bottomup`; this command is only for expressions.)
-- [ ] Output formats:
+- [x] (Trees for other grammars come from `topdown` and `bottomup`; this command is only for expressions.)
+- [x] Output formats:
   - ASCII tree in the terminal (always works)
   - leftmost and rightmost derivation steps of the same tree
   - Graphviz `.dot` file (PNG only if `dot` is installed)
   - AST of the same expression side by side, to show parse tree vs. syntax tree (2.8)
-- [ ] Invalid expression (`a + * b`): clear error with the position, no crash
-- [ ] Tests: tree shape for `9-5+2` (left-associative), `a+b*c` (precedence), `(a+b)*c` (parentheses), error case
+- [x] Invalid expression (`a + * b`): clear error with the position, no crash
+- [x] Tests: tree shape for `9-5+2` (left-associative), `a+b*c` (precedence), `(a+b)*c` (parentheses), error case; the tree equals the only tree found by `derivation.py`
+- [x] CLI `parsetree EXPR [--derivations --ast --all --dot FILE --png]`; web page **Parse Tree** (both derivations step by step, AST beside the tree)
 
 ### Phase 4 — Main parser + AST (Ch 2.4, 2.8, 4.1) (4 days)
 - [ ] `ast_nodes.py`: `Program, Decl, Assign, If, While, Block, Print, BinOp, UnOp, Id, Num`; ASCII tree printer

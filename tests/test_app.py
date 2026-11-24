@@ -110,3 +110,14 @@ def test_top_down_reject_and_step():
     assert at.error
     at.slider(key="td_step_ll1").set_value(2).run()
     assert not at.exception
+
+
+def test_parse_tree_page():
+    at = run("pages/6_Parse_Tree.py")
+    assert not at.error
+    at.segmented_control(key="pt_order").set_value("rightmost").run()
+    at.slider(key="pt_step_rightmost").set_value(3).run()
+    assert not at.exception
+    at.text_input(key="pt_expr").set_value("a + * b").run()
+    assert not at.exception
+    assert at.error

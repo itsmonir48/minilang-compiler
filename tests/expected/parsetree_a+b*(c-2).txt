@@ -1,0 +1,47 @@
+E
+├── E
+│   └── T
+│       └── F
+│           └── id (a)
+├── +
+└── T
+    ├── T
+    │   └── F
+    │       └── id (b)
+    ├── *
+    └── F
+        ├── (
+        ├── E
+        │   ├── E
+        │   │   └── T
+        │   │       └── F
+        │   │           └── id (c)
+        │   ├── -
+        │   └── T
+        │       └── F
+        │           └── num (2)
+        └── )
+
++
+├── a
+└── *
+    ├── b
+    └── -
+        ├── c
+        └── 2
+
+E
+E + T
+T + T
+F + T
+id(a) + T
+id(a) + T * F
+id(a) + F * F
+id(a) + id(b) * F
+id(a) + id(b) * ( E )
+id(a) + id(b) * ( E - T )
+id(a) + id(b) * ( T - T )
+id(a) + id(b) * ( F - T )
+id(a) + id(b) * ( id(c) - T )
+id(a) + id(b) * ( id(c) - F )
+id(a) + id(b) * ( id(c) - num(2) )
