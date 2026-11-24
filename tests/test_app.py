@@ -74,3 +74,39 @@ def test_translators_page_postfix_and_grammars():
     for g in ("brackets", "lists", "div3"):
         at.segmented_control(key="tr_grammar").set_value(g).run()
         assert not at.exception
+
+
+def test_grammar_workbench_every_grammar():
+    from minilang.grammar.grammar import grammar_names
+
+    at = run("pages/4_Grammar_Workbench.py")
+    for name in grammar_names():
+        at.selectbox(key="gw_grammar").select(name).run()
+        assert not at.exception, name
+
+
+def test_grammar_workbench_bad_grammar():
+    at = run("pages/4_Grammar_Workbench.py")
+    at.text_area(key="gw_gtext").set_value("E E -> x").run()
+    assert not at.exception
+    assert at.error
+
+
+def test_top_down_every_grammar_and_method():
+    from minilang.grammar.grammar import grammar_names
+
+    at = run("pages/5_Top_Down_Parsing.py")
+    for method in ("backtrack", "predictive", "ll1"):
+        at.segmented_control(key="td_method").set_value(method).run()
+        for name in grammar_names():
+            at.selectbox(key="td_grammar").select(name).run()
+            assert not at.exception, (method, name)
+
+
+def test_top_down_reject_and_step():
+    at = run("pages/5_Top_Down_Parsing.py")
+    at.text_input(key="td_input_expr_ll1").set_value("id+*id").run()
+    assert not at.exception
+    assert at.error
+    at.slider(key="td_step_ll1").set_value(2).run()
+    assert not at.exception

@@ -1,0 +1,3 @@
+# Indirect left recursion (4.18, Example 4.20): S => A a => S d a.
+S -> A a | b
+A -> A c | S d | ε

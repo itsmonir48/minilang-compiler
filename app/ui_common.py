@@ -35,6 +35,18 @@ CSS = """
 .buf td.empty {background: #f1f3f5; color: #adb5bd;}
 .buf tr.idx td {border: none; font-size: 10px; color: #868e96; height: 14px; background: transparent;}
 .buf tr.ptr td {border: none; font-size: 11px; color: #d9480f; font-weight: 700; background: transparent;}
+.tr-line {display: block;}
+.tr-match {color: #2b8a3e;}
+.tr-fail {color: #c92a2a;}
+.tr-back {color: #e8590c;}
+.tr-acc {color: #2b8a3e; font-weight: 700;}
+.tr-future {color: #ced4da;}
+.tr-cur {outline: 2px solid #f08c00; border-radius: 3px; background: #fff3bf;}
+table.ll1 {border-collapse: collapse; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px;}
+table.ll1 th, table.ll1 td {border: 1px solid #dee2e6; padding: 4px 8px; text-align: left; color: #212529;}
+table.ll1 th {background: #f1f3f5;}
+table.ll1 td.conflict {background: #ffe3e3; color: #c92a2a; font-weight: 600;}
+table.ll1 td.hit {background: #fff3bf; outline: 2px solid #f08c00;}
 .buf tr.half td {border: none; font-size: 11px; color: #495057; background: transparent;}
 </style>
 """
@@ -213,3 +225,74 @@ def errors_block(errors: list[CompileError], source: str) -> None:
         return
     st.error(f"{len(errors)} error(s)")
     st.code("\n".join(e.format(source) for e in errors), language=None)
+
+
+# ----------------------------------------------------------------------------- grammars
+
+def grammar_editor(key: str, default: str = "expr"):
+    """Grammar picker + editable text. Returns (name, text, Grammar or None)."""
+    from minilang.grammar.grammar import (Grammar, grammar_comment, grammar_names,
+                                          grammar_path)
+
+    names = grammar_names()
+    choice = st.selectbox("Load a grammar", names,
+                          index=names.index(default) if default in names else 0,
+                          key=f"{key}_grammar")
+    if st.session_state.get(f"{key}_gloaded") != choice:
+        body = [ln for ln in grammar_path(choice).read_text().splitlines()
+                if not ln.startswith("#")]
+        st.session_state[f"{key}_gtext"] = "\n".join(body).strip() + "\n"
+        st.session_state[f"{key}_gloaded"] = choice
+    st.caption(grammar_comment(choice))
+    text = st.text_area("Grammar (edit freely; `->`, `|`, `ε` or `eps`)", key=f"{key}_gtext",
+                        height=170)
+    try:
+        return choice, text, Grammar.parse(text)
+    except CompileError as e:
+        st.error(e.format(text))
+        return choice, text, None
+
+
+TRACE_CLASS = {"match": "tr-match", "fail": "tr-fail", "error": "tr-fail",
+               "backtrack": "tr-back", "accept": "tr-acc"}
+
+
+def trace_html(lines: list[str], kinds: list[str], current: int, before: int = 14,
+               after: int = 8) -> str:
+    """A window of trace lines around `current`; future lines are faded."""
+    lo = max(0, current - before)
+    hi = min(len(lines), current + after + 1)
+    out = []
+    if lo > 0:
+        out.append(f'<span class="tr-line tr-future">… {lo} earlier steps</span>')
+    for i in range(lo, hi):
+        cls = ["tr-line"]
+        if i > current:
+            cls.append("tr-future")
+        else:
+            cls.append(TRACE_CLASS.get(kinds[i], ""))
+        if i == current:
+            cls.append("tr-cur")
+        out.append(f'<span class="{" ".join(cls)}">{html.escape(lines[i])}</span>')
+    if hi < len(lines):
+        out.append(f'<span class="tr-line tr-future">… {len(lines) - hi} more steps</span>')
+    return ('<div class="ml-code" style="white-space: pre; font-size: 12.5px;">'
+            + "".join(out) + "</div>")
+
+
+def ll1_table_html(t, hit: tuple[str, str] | None = None) -> str:
+    """LL(1) table M[A, a]; multiply-defined entries in red, `hit` outlined."""
+    cols = t.columns()
+    head = "".join(f"<th>{html.escape(c)}</th>" for c in cols)
+    rows = []
+    for a in t.grammar.nonterminals:
+        cells = []
+        for c in cols:
+            ps = t.entry(a, c)
+            text = "<br>".join(html.escape(str(p)) for p in ps)
+            cls = "conflict" if len(ps) > 1 else ""
+            if hit == (a, c):
+                cls += " hit"
+            cells.append(f'<td class="{cls.strip()}">{text}</td>')
+        rows.append(f"<tr><th>{html.escape(a)}</th>{''.join(cells)}</tr>")
+    return (f'<table class="ll1"><tr><th>M</th>{head}</tr>{"".join(rows)}</table>')

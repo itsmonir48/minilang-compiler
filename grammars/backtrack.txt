@@ -1,0 +1,3 @@
+# Backtracking example (4.4.1, Example 4.29): on input cad, A -> a b fails and A -> a is tried next.
+S -> c A d
+A -> a b | a

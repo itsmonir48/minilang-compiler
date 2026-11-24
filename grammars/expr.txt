@@ -1,0 +1,4 @@
+# Expression grammar (4.1), left-recursive: precedence and associativity in the grammar.
+E -> E + T | T
+T -> T * F | F
+F -> ( E ) | id

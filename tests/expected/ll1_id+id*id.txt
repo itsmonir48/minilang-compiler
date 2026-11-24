@@ -1,0 +1,37 @@
+$ E             id + id * id $   output E → T E'
+$ E' T          id + id * id $   output T → F T'
+$ E' T' F       id + id * id $   output F → id
+$ E' T' id      id + id * id $   match id
+$ E' T'            + id * id $   output T' → ε
+$ E'               + id * id $   output E' → + T E'
+$ E' T +           + id * id $   match +
+$ E' T               id * id $   output T → F T'
+$ E' T' F            id * id $   output F → id
+$ E' T' id           id * id $   match id
+$ E' T'                 * id $   output T' → * F T'
+$ E' T' F *             * id $   match *
+$ E' T' F                 id $   output F → id
+$ E' T' id                id $   match id
+$ E' T'                      $   output T' → ε
+$ E'                         $   output E' → ε
+$                            $   accept
+
+E
+├── T
+│   ├── F
+│   │   └── id
+│   └── T'
+│       └── ε
+└── E'
+    ├── +
+    ├── T
+    │   ├── F
+    │   │   └── id
+    │   └── T'
+    │       ├── *
+    │       ├── F
+    │       │   └── id
+    │       └── T'
+    │           └── ε
+    └── E'
+        └── ε

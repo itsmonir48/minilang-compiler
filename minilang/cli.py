@@ -211,6 +211,160 @@ def cmd_check(args: argparse.Namespace) -> int:
     return 0
 
 
+def _load_grammar_arg(name: str):
+    from minilang.grammar.grammar import load_grammar
+
+    try:
+        return load_grammar(name)
+    except FileNotFoundError:
+        from minilang.grammar.grammar import grammar_names
+        raise SystemExit(f"minilang: no grammar {name!r} (a file, or one of: "
+                         f"{', '.join(grammar_names())})")
+
+
+def _tokens_arg(g, text: str):
+    from minilang.grammar.grammar import tokenize_input
+
+    return tokenize_input(g, text)
+
+
+def cmd_grammar(args: argparse.Namespace) -> int:
+    """Grammar workbench (4.2-4.4): print, transform, FIRST/FOLLOW, LL(1) table."""
+    from minilang.errors import CompileError
+    from minilang.grammar import transforms as tf
+    from minilang.grammar.first_follow import first_follow, fmt_set
+    from minilang.grammar.ll1 import build_ll1
+
+    try:
+        g = _load_grammar_arg(args.file)
+    except CompileError as e:
+        print(e.format(), file=sys.stderr)
+        return 1
+    print(g.to_text())
+    print(f"\nstart: {g.start}   nonterminals: {' '.join(g.nonterminals)}   "
+          f"terminals: {' '.join(g.terminals)}")
+    rec = tf.left_recursive(g)
+    if rec:
+        print("left-recursive: " + ", ".join(rec))
+    for flag, title, fn in ((args.augment, "augmented grammar", None),
+                            (args.remove_left_recursion, "left recursion removed (Algorithm 4.19)",
+                             tf.remove_left_recursion),
+                            (args.left_factor, "left factored (Algorithm 4.21)", tf.left_factor)):
+        if not flag:
+            continue
+        print(f"\n{title}:")
+        if fn is None:
+            print(g.augmented().to_text())
+            continue
+        g2, steps = fn(g)
+        for s in steps:
+            print(f"  {s}")
+        print(g2.to_text())
+    if args.first_follow or args.ll1:
+        sets = first_follow(g)
+        rows = [[a, fmt_set(sets.first[a], g), fmt_set(sets.follow[a], g)]
+                for a in g.nonterminals]
+        print()
+        print(render_table(["Nonterminal", "FIRST", "FOLLOW"], rows, args.md))
+    if args.ll1:
+        t = build_ll1(g)
+        cols = t.columns()
+        rows = [[a] + [" / ".join(str(p) for p in t.entry(a, c)) for c in cols]
+                for a in g.nonterminals]
+        print()
+        print(render_table(["M"] + cols, rows, args.md))
+        if t.is_ll1:
+            print("\nLL(1): yes, no multiply-defined entries")
+        else:
+            n = len(t.conflicts)
+            print(f"\nLL(1): no, {n} multiply-defined {'entry' if n == 1 else 'entries'}:")
+            for a, b, ps in t.conflicts:
+                print(f"  M[{a}, {b}] = {' | '.join(str(p) for p in ps)}")
+    return 0
+
+
+def cmd_derive(args: argparse.Namespace) -> int:
+    """Leftmost / rightmost derivations and the number of parse trees (4.2)."""
+    from minilang.errors import CompileError
+    from minilang.grammar import derivation as dv
+    from minilang.tree import render_ascii
+
+    g = _load_grammar_arg(args.file)
+    if args.language is not None:
+        lang = dv.language(g, args.language)
+        print(f"strings of L(G) with at most {args.language} terminals"
+              + ("" if lang.complete else " (search stopped early, list may be incomplete)")
+              + f": {len(lang.strings)}")
+        for s in lang.strings:
+            print("  " + (" ".join(s) or "ε"))
+        if args.input is None:
+            return 0
+    if args.input is None:
+        print("minilang derive: give an input string or --language N", file=sys.stderr)
+        return 2
+    try:
+        toks = [t for t, _ in _tokens_arg(g, args.input)]
+    except CompileError as e:
+        print(e.format(args.input), file=sys.stderr)
+        return 1
+    d = dv.derive(g, toks, max_trees=args.trees)
+    n = len(d.sequences)
+    print(f"input: {' '.join(toks) or 'ε'}")
+    print(f"parse trees: {d.count_text}"
+          + (" (search budget reached)" if d.budget_hit else ""))
+    if n == 0:
+        return 1
+    if n > 1:
+        print("the grammar is ambiguous: this string has more than one parse tree")
+    for k, seq in enumerate(d.sequences[:args.show], start=1):
+        tree = dv.tree_from_leftmost(g, seq)
+        print(f"\n--- tree {k} ---")
+        print(render_ascii(tree))
+        print("\nleftmost : " + dv.derivation_text(g, seq, True))
+        print("rightmost: " + dv.derivation_text(g, dv.rightmost_sequence(tree), False))
+    return 0
+
+
+def cmd_topdown(args: argparse.Namespace) -> int:
+    """Top-down parsing trace: backtracking, predictive, table-driven LL(1) (4.4)."""
+    from minilang.errors import CompileError
+    from minilang.grammar import topdown as td
+    from minilang.grammar.ll1 import input_text
+    from minilang.tree import render_ascii
+
+    g = _load_grammar_arg(args.file)
+    refusal = td.check(g, args.method)
+    if refusal:
+        print(f"cannot use {td.METHODS[args.method]}: {refusal.reason}", file=sys.stderr)
+        if refusal.suggestion is not None:
+            print("\ntransformed grammar"
+                  + (" (works for this method):" if refusal.suggestion_ok
+                     else " (still not suitable):"), file=sys.stderr)
+            print(refusal.suggestion.to_text(), file=sys.stderr)
+        return 2
+    try:
+        tokens = _tokens_arg(g, args.input)
+    except CompileError as e:
+        print(e.format(args.input), file=sys.stderr)
+        return 1
+    run = td.run_method(g, args.method, tokens)
+    print(f"{td.METHODS[args.method]}, input: {args.input}\n")
+    if args.method == "ll1":
+        rows = [[" ".join(s.stack), input_text(tokens, s.pos), s.action] for s in run.steps]
+        print(render_table(["Stack", "Input", "Action"], rows, args.md))
+    else:
+        rows = [[i, "  " * s.depth + s.action, input_text(tokens, s.pos)]
+                for i, s in enumerate(run.steps, start=1)]
+        print(render_table(["#", "Action", "Input"], rows, args.md))
+    if run.accepted:
+        print("\naccepted\n")
+        print(render_ascii(run.tree))
+        return 0
+    print(file=sys.stderr)
+    print(run.error.format(args.input), file=sys.stderr)
+    return 1
+
+
 def cmd_ui(args: argparse.Namespace) -> int:
     """Start the Streamlit web interface."""
     import subprocess
@@ -279,6 +433,33 @@ def build_parser() -> argparse.ArgumentParser:
                    help="div3 only: every binary string up to length N")
     p.add_argument("--md", action="store_true", help="print tables as Markdown")
     p.set_defaults(func=cmd_check)
+
+    p = sub.add_parser("grammar", help="grammar workbench: FIRST/FOLLOW, LL(1), transforms (4.2-4.4)")
+    p.add_argument("file", help="grammar file, or a name from grammars/ (e.g. expr)")
+    p.add_argument("--augment", action="store_true", help="print the augmented grammar")
+    p.add_argument("--remove-left-recursion", action="store_true",
+                   help="Algorithm 4.19 with its steps")
+    p.add_argument("--left-factor", action="store_true", help="Algorithm 4.21 with its steps")
+    p.add_argument("--first-follow", action="store_true", help="FIRST and FOLLOW sets")
+    p.add_argument("--ll1", action="store_true", help="LL(1) table and its conflicts")
+    p.add_argument("--md", action="store_true", help="print tables as Markdown")
+    p.set_defaults(func=cmd_grammar)
+
+    p = sub.add_parser("derive", help="derivations, parse trees, ambiguity, L(G) (4.2)")
+    p.add_argument("file", help="grammar file, or a name from grammars/")
+    p.add_argument("input", nargs="?", help="string to derive, e.g. 'id+id*id'")
+    p.add_argument("--trees", type=int, default=10, help="stop after this many trees")
+    p.add_argument("--show", type=int, default=2, help="print this many trees (default 2)")
+    p.add_argument("--language", type=int, metavar="N",
+                   help="list the strings of L(G) with at most N terminals")
+    p.set_defaults(func=cmd_derive)
+
+    p = sub.add_parser("topdown", help="top-down parsing trace (4.4)")
+    p.add_argument("file", help="grammar file, or a name from grammars/")
+    p.add_argument("input", help="string to parse, e.g. 'id+id*id'")
+    p.add_argument("--method", choices=["backtrack", "predictive", "ll1"], default="ll1")
+    p.add_argument("--md", action="store_true", help="print tables as Markdown")
+    p.set_defaults(func=cmd_topdown)
 
     p = sub.add_parser("ui", help="open the web interface in the browser")
     p.add_argument("--port", type=int, default=8501)

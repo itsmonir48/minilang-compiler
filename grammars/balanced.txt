@@ -1,0 +1,2 @@
+# Balanced parentheses (language-description exercise, 2.2 / 4.2): LL(1).
+S -> ( S ) S | ε

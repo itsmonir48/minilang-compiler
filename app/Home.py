@@ -54,12 +54,19 @@ PAGES = [
     ("pages/3_Translators.py", "Translators", "🔁",
      "Infix, postfix and prefix translation with annotated parse trees, the 2.5 translator "
      "step by step, Roman numerals and the small grammars of Chapter 2."),
+    ("pages/4_Grammar_Workbench.py", "Grammar Workbench", "📐",
+     "Derivations and ambiguity, L(G), left recursion removal, left factoring, FIRST and "
+     "FOLLOW, the LL(1) table with its conflicts."),
+    ("pages/5_Top_Down_Parsing.py", "Top-Down Parsing", "🌳",
+     "Backtracking, predictive and table-driven LL(1) parsing step by step, with the parse "
+     "tree growing from the root down."),
 ]
-cols = st.columns(3)
-for col, (path, label, icon, text) in zip(cols, PAGES):
-    with col:
-        st.page_link(path, label=label, icon=icon)
-        st.caption(text)
+for i in range(0, len(PAGES), 3):
+    cols = st.columns(3)
+    for col, (path, label, icon, text) in zip(cols, PAGES[i:i + 3]):
+        with col:
+            st.page_link(path, label=label, icon=icon)
+            st.caption(text)
 
 st.subheader("MiniLang in one example")
 st.code((EXAMPLES / "factorial.mini").read_text(), language="c")

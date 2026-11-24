@@ -179,19 +179,20 @@ Do not start the next phase until the current one works.
 - [x] Tests (round trip between the three notations, all 3999 Roman numerals)
 
 ### Phase 3 — Grammar workbench, top-down (Chapter 4.2–4.4) (4–5 days)
-- [ ] `grammar.py`: load grammar from text (`E -> E + T | T`, `ε` / `eps`), augment, print
-- [ ] `derivation.py`: leftmost / rightmost derivation search for a string (bounded); count parse trees and show two different ones for ambiguous grammars (expr without precedence, dangling-else); list all strings of the language up to length n (helps describe L(G)) (4.2)
-- [ ] `transforms.py`: immediate and general (Algorithm 4.19) left-recursion removal; left factoring
-- [ ] Dangling-else: textbook matched/open grammar stored in `grammars/dangling_else_fixed.txt`; `derivation.py` shows the old grammar has 2 trees and the fixed one has 1 for `if E then if E then S else S`
-- [ ] `first_follow.py`: FIRST of symbols and strings, FOLLOW
-- [ ] `ll1.py`: table M[A, a], report multiply-defined entries, table-driven parser that prints `Stack | Input | Action`
-- [ ] `topdown.py` — **Top-down parsing visualizer** (4.4), three parsers on the same input:
+- [x] `grammar.py`: load grammar from text (`E -> E + T | T`, `ε` / `eps`), augment, print; input strings split into terminals by longest match
+- [x] `derivation.py`: leftmost / rightmost derivation search for a string (bounded); count parse trees and show two different ones for ambiguous grammars (expr without precedence, dangling-else); list all strings of the language up to length n (helps describe L(G)) (4.2)
+- [x] `transforms.py`: immediate and general (Algorithm 4.19) left-recursion removal; left factoring (Algorithm 4.21); left-recursion detection (also hidden, through nullable symbols)
+- [x] Dangling-else: textbook matched/open grammar stored in `grammars/dangling_else_fixed.txt`; `derivation.py` shows the old grammar has 2 trees and the fixed one has 1 for `if cond then if cond then other else other`
+- [x] `first_follow.py`: FIRST of symbols and strings, FOLLOW (every pass recorded)
+- [x] `ll1.py`: table M[A, a], report multiply-defined entries, table-driven parser that prints `Stack | Input | Action`
+- [x] `topdown.py` — **Top-down parsing visualizer** (4.4), three parsers on the same input:
   - **Backtracking recursive descent** (4.4.1): textbook example `S → c A d`, `A → a b | a` on `cad`; prints every try, failure and backtrack
   - **Predictive recursive descent** (no backtracking): call trace with indentation and current lookahead, e.g. `E() → T() → F() match id(a)`
   - **Table-driven LL(1)**: `Stack | Input | Action` trace (from `ll1.py`)
   - Shows the parse tree **growing from the root down**, one step per expansion (leftmost derivation order)
   - Refuses a left-recursive or non-LL(1) grammar with a clear reason, and offers the transformed grammar from `transforms.py`
-- [ ] Tests against the textbook grammar (4.28) answers; backtracking parser accepts `cad`, rejects `cd`
+- [x] Tests against the textbook grammar (4.28) answers; backtracking parser accepts `cad`, rejects `cd`; the three parsers agree on every string
+- [x] CLI: `grammar`, `derive`, `topdown`; grammars in `grammars/`; web pages **Grammar Workbench** and **Top-Down Parsing**
 
 ### Phase 3.5 — Expression → Parse Tree generator (Ch 2.2, 4.1, 4.2) (1–2 days)
 User gives an expression such as `a + b * (c - 2)`; the tool prints its **parse tree**.

@@ -9,7 +9,7 @@ with step-by-step top-down and bottom-up parse traces.
 
 CIT 412 Compiler Design and Automata Theory Sessional.
 
-Status: Phase 2 (Chapter 2 translators) done. See [ROADMAP.md](ROADMAP.md).
+Status: Phase 3 (grammar workbench and top-down parsing) done. See [ROADMAP.md](ROADMAP.md).
 
 ## Setup
 
@@ -36,6 +36,12 @@ minilang translate '95-2+' --from postfix          # postfix -> infix/prefix
 minilang roman MCMXCIV --tree                      # Roman <-> integer (direction is detected)
 minilang check div3 --table 6                      # num -> 11 | 1001 | num 0 | num num
 minilang check brackets '([]){}'                   # balanced brackets
+minilang grammar expr --remove-left-recursion --ll1 # grammar workbench (grammars/*.txt)
+minilang grammar expr_ll1 --first-follow --ll1      # FIRST / FOLLOW, LL(1) table
+minilang derive expr_ambiguous 'id+id*id'           # 2 parse trees: ambiguous
+minilang derive ab_equal --language 4               # strings of L(G) up to length 4
+minilang topdown backtrack cad --method backtrack   # try, fail, backtrack
+minilang topdown expr_ll1 'id+id*id'                # Stack | Input | Action
 make -C lex demo                                 # Flex programs (needs flex + gcc)
 python scripts/buffer_experiment.py              # writes docs/buffer_experiment.md
 ```

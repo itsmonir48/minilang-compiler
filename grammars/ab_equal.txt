@@ -1,0 +1,2 @@
+# Strings with as many a's as b's (language-description exercise, 4.2): ambiguous.
+S -> a S b S | b S a S | ε

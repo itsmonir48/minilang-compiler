@@ -69,16 +69,19 @@ def _html(s: str) -> str:
     return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
 
 
-def to_dot(root: Node, attrs: bool = True, highlight: set[int] | None = None) -> str:
-    """Graphviz DOT, top-down. `highlight` holds id()s of nodes to colour.
+def to_dot(root: Node, attrs: bool = True, highlight: set[int] | None = None,
+           faded: set[int] | None = None) -> str:
+    """Graphviz DOT, top-down. `highlight` holds id()s of nodes to colour; `faded` holds
+    id()s of nodes drawn grey and dashed (e.g. nonterminals not expanded yet).
 
     Labels are Graphviz HTML labels: the symbol, then the attributes in small grey text.
     """
     highlight = highlight or set()
+    faded = faded or set()
     lines = [
         "digraph T {",
         "  bgcolor=transparent; nodesep=0.2; ranksep=0.3;",
-        '  node [fontname="Helvetica", fontsize=12, shape=plaintext, height=0.2, margin=0.03];',
+        '  node [fontname="Helvetica", fontsize=12, shape=plaintext, width=0.3, height=0.2, margin=0.04];',
         "  edge [arrowhead=none, color=\"#868e96\"];",
     ]
     ids: dict[int, str] = {}
@@ -87,11 +90,15 @@ def to_dot(root: Node, attrs: bool = True, highlight: set[int] | None = None) ->
         name = f"n{len(ids)}"
         ids[id(node)] = name
         color = "#1864ab" if node.is_leaf else "#212529"
+        if id(node) in faded:
+            color = "#adb5bd"
         label = f'<font color="{color}"><b>{_html(node.label())}</b></font>'
         if attrs and node.attrs:
             extra = "<br/>".join(_html(f"{k} = {_show(v)}") for k, v in node.attrs.items())
             label += f'<br/><font point-size="9" color="#868e96">{extra}</font>'
         style = ""
+        if id(node) in faded:
+            style = ', shape=box, style="rounded,dashed", color="#ced4da"'
         if id(node) in highlight:
             style = ', shape=box, style="rounded,filled", fillcolor="#ffe8cc", color="#d9480f"'
         lines.append(f"  {name} [label=<{label}>{style}];")

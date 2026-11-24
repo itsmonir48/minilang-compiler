@@ -1,0 +1,5 @@
+# Dangling-else without ambiguity (4.3.2): an else matches the nearest unmatched then.
+stmt    -> matched | open
+matched -> if expr then matched else matched | other
+open    -> if expr then stmt | if expr then matched else open
+expr    -> cond

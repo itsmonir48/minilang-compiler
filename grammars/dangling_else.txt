@@ -1,0 +1,5 @@
+# Dangling-else grammar (4.14): ambiguous, the else can belong to either if.
+stmt -> if expr then stmt
+      | if expr then stmt else stmt
+      | other
+expr -> cond

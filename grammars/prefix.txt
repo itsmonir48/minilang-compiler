@@ -1,0 +1,2 @@
+# Prefix expressions (language-description exercise, 4.2): + S S, * S S or a.
+S -> + S S | * S S | a
