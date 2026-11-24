@@ -44,15 +44,22 @@ st.graphviz_chart(pipeline_dot())
 st.caption("Green = available now. The other stages are added phase by phase (see ROADMAP.md).")
 
 st.subheader("Pages")
-c1, c2 = st.columns(2)
-with c1:
-    st.page_link("pages/1_Lexer.py", label="Lexer", icon="🔤")
-    st.caption("Write MiniLang code and see its tokens, the name table, lexical errors, the "
-               "transition-diagram path of every token and the buffer pair with its pointers.")
-with c2:
-    st.page_link("pages/2_Strings_and_Regex.py", label="Strings & Regex", icon="🔎")
-    st.caption("Prefixes, suffixes, substrings and subsequences of a string; test strings "
-               "against the regular definitions of the lab sheet.")
+PAGES = [
+    ("pages/1_Lexer.py", "Lexer", "🔤",
+     "Write MiniLang code and see its tokens, the name table, lexical errors, the "
+     "transition-diagram path of every token and the buffer pair with its pointers."),
+    ("pages/2_Strings_and_Regex.py", "Strings & Regex", "🔎",
+     "Prefixes, suffixes, substrings and subsequences of a string; test strings against "
+     "the regular definitions of the lab sheet."),
+    ("pages/3_Translators.py", "Translators", "🔁",
+     "Infix, postfix and prefix translation with annotated parse trees, the 2.5 translator "
+     "step by step, Roman numerals and the small grammars of Chapter 2."),
+]
+cols = st.columns(3)
+for col, (path, label, icon, text) in zip(cols, PAGES):
+    with col:
+        st.page_link(path, label=label, icon=icon)
+        st.caption(text)
 
 st.subheader("MiniLang in one example")
 st.code((EXAMPLES / "factorial.mini").read_text(), language="c")

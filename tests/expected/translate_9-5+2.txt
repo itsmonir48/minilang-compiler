@@ -1,0 +1,32 @@
+expr  [post = 9 5 - 2 +, pre = + - 9 5 2, val = 6]
+├── expr  [post = 9 5 -, pre = - 9 5, val = 4]
+│   ├── expr  [post = 9, pre = 9, val = 9]
+│   │   └── term  [post = 9, pre = 9, val = 9]
+│   │       └── factor  [post = 9, pre = 9, val = 9]
+│   │           └── num (9)
+│   ├── -
+│   └── term  [post = 5, pre = 5, val = 5]
+│       └── factor  [post = 5, pre = 5, val = 5]
+│           └── num (5)
+├── +
+└── term  [post = 2, pre = 2, val = 2]
+    └── factor  [post = 2, pre = 2, val = 2]
+        └── num (2)
+
+expr()    | 
+  term()    | 
+    factor()    | 
+      match '9'    | 
+      print('9')    | 9
+  match '-'    | 9
+  term()    | 9
+    factor()    | 9
+      match '5'    | 9
+      print('5')    | 9 5
+  print('-')    | 9 5 -
+  match '+'    | 9 5 -
+  term()    | 9 5 -
+    factor()    | 9 5 -
+      match '2'    | 9 5 -
+      print('2')    | 9 5 - 2
+  print('+')    | 9 5 - 2 +

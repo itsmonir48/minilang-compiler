@@ -98,6 +98,119 @@ def cmd_regex(args: argparse.Namespace) -> int:
     return 0
 
 
+def _syntax_failure(err, text: str) -> int:
+    print(err.format(text), file=sys.stderr)
+    return 1
+
+
+def cmd_translate(args: argparse.Namespace) -> int:
+    """Infix / postfix / prefix translation with an annotated parse tree (2.3, 2.5)."""
+    from minilang import translators as tr
+    from minilang.errors import CompileError
+    from minilang.tree import render_ascii
+
+    try:
+        t = tr.translate(args.expr, args.source)
+    except CompileError as e:
+        return _syntax_failure(e, args.expr)
+    print(f"input ({t.notation}): {t.source}")
+    print(f"infix          : {t.infix}")
+    print(f"postfix        : {t.postfix}")
+    print(f"prefix         : {t.prefix}")
+    value = t.value if t.value is not None else f"- ({t.value_note})"
+    print(f"value          : {value}")
+    if args.scheme:
+        print()
+        print("translation scheme:")
+        for line in tr.SCHEMES[t.notation]:
+            print(f"  {line}")
+    if args.tree:
+        print()
+        print("annotated parse tree:")
+        print(render_ascii(t.tree))
+    if args.trace:
+        print()
+        if not t.trace:
+            print("(the call trace is recorded for the infix translator of 2.5 only)")
+        else:
+            rows = [["  " * s.depth + s.action, s.output] for s in t.trace]
+            print(render_table(["Call / action", "Output so far"], rows, args.md))
+    return 0
+
+
+def cmd_roman(args: argparse.Namespace) -> int:
+    """Roman numeral <-> integer (2.2 grammar, 2.3 scheme); the direction is detected."""
+    from minilang import translators as tr
+    from minilang.errors import CompileError
+    from minilang.tree import render_ascii
+
+    text = args.value
+    try:
+        if text.strip().isdigit():
+            result, tree = tr.int_to_roman(text)
+            scheme = tr.INT_TO_ROMAN_SCHEME
+        else:
+            result, tree = tr.roman_to_int(text)
+            scheme = tr.ROMAN_GRAMMAR
+    except CompileError as e:
+        return _syntax_failure(e, text)
+    print(f"{text.strip()} = {result}")
+    if args.scheme:
+        print()
+        for line in scheme:
+            print(f"  {line}")
+    if args.tree:
+        print()
+        print(render_ascii(tree))
+    return 0
+
+
+def cmd_check(args: argparse.Namespace) -> int:
+    """Membership + parse tree for the small grammars of the 2.2 exercises."""
+    from minilang import translators as tr
+    from minilang.errors import CompileError
+    from minilang.tree import render_ascii
+
+    if args.grammar == "div3" and args.table:
+        rows = tr.div3_table(args.table)
+        members = [r for r in rows if r["in L(G)"]]
+        print(f"grammar: {tr.DIV3_GRAMMAR}")
+        print(render_table(["String", "Value", "In L(G)", "Divisible by 3"],
+                           [[r["string"], r["value"], "yes" if r["in L(G)"] else "no",
+                             "yes" if r["divisible by 3"] else "no"] for r in rows], args.md))
+        print()
+        print(f"{len(rows)} strings of length 1..{args.table}; {len(members)} in L(G); "
+              f"in L(G) but not divisible by 3: "
+              f"{sum(not r['divisible by 3'] for r in members)}; divisible by 3 but not in "
+              f"L(G): {sum(r['divisible by 3'] and not r['in L(G)'] for r in rows)}")
+        return 0
+    if args.input is None:
+        print("minilang check: an input string is needed (or --table N for div3)",
+              file=sys.stderr)
+        return 2
+    text = args.input
+    grammar = {"div3": tr.DIV3_GRAMMAR, "brackets": tr.BRACKETS_GRAMMAR,
+               "left-list": tr.LIST_GRAMMARS["left"],
+               "right-list": tr.LIST_GRAMMARS["right"]}[args.grammar]
+    print(f"grammar: {grammar}")
+    try:
+        if args.grammar == "div3":
+            tree = tr.div3_tree(text)
+            if tree is None:
+                print(f"{text!r} is not in L(G)")
+                return 1
+        elif args.grammar == "brackets":
+            tree = tr.brackets_tree(text)
+        else:
+            tree = tr.comma_list_tree(text, args.grammar.split("-")[0])
+    except CompileError as e:
+        return _syntax_failure(e, text)
+    print(f"{text!r} is in L(G)")
+    print()
+    print(render_ascii(tree))
+    return 0
+
+
 def cmd_ui(args: argparse.Namespace) -> int:
     """Start the Streamlit web interface."""
     import subprocess
@@ -141,6 +254,31 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("strings", nargs="*")
     p.add_argument("--md", action="store_true", help="print tables as Markdown")
     p.set_defaults(func=cmd_regex)
+
+    p = sub.add_parser("translate", help="infix / postfix / prefix translation (2.3, 2.5)")
+    p.add_argument("expr", help="the expression, e.g. '9-5+2' (quote it in the shell)")
+    p.add_argument("--from", dest="source", choices=["infix", "postfix", "prefix"],
+                   default="infix", help="notation of the input (default infix)")
+    p.add_argument("--tree", action="store_true", help="print the annotated parse tree")
+    p.add_argument("--trace", action="store_true",
+                   help="print the call trace of the 2.5 translator (infix input)")
+    p.add_argument("--scheme", action="store_true", help="print the translation scheme")
+    p.add_argument("--md", action="store_true", help="print tables as Markdown")
+    p.set_defaults(func=cmd_translate)
+
+    p = sub.add_parser("roman", help="Roman numeral <-> integer (2.2, 2.3)")
+    p.add_argument("value", help="a Roman numeral (MCMXCIV) or an integer 1..3999")
+    p.add_argument("--tree", action="store_true", help="print the annotated parse tree")
+    p.add_argument("--scheme", action="store_true", help="print the grammar / scheme")
+    p.set_defaults(func=cmd_roman)
+
+    p = sub.add_parser("check", help="small grammars of the 2.2 exercises")
+    p.add_argument("grammar", choices=["div3", "brackets", "left-list", "right-list"])
+    p.add_argument("input", nargs="?", help="the string to check")
+    p.add_argument("--table", type=int, metavar="N",
+                   help="div3 only: every binary string up to length N")
+    p.add_argument("--md", action="store_true", help="print tables as Markdown")
+    p.set_defaults(func=cmd_check)
 
     p = sub.add_parser("ui", help="open the web interface in the browser")
     p.add_argument("--port", type=int, default=8501)

@@ -1,5 +1,6 @@
 """Smoke tests for the Streamlit pages (skipped if Streamlit is not installed)."""
 
+import sys
 from pathlib import Path
 
 import pytest
@@ -8,6 +9,10 @@ pytest.importorskip("streamlit")
 from streamlit.testing.v1 import AppTest  # noqa: E402
 
 APP = Path(__file__).parent.parent / "app"
+# `streamlit run app/Home.py` puts app/ on sys.path (for ui_common, diagrams); AppTest of
+# a page under app/pages/ does not, so add it here.
+if str(APP) not in sys.path:
+    sys.path.insert(0, str(APP))
 
 
 def run(page: str) -> AppTest:
@@ -49,3 +54,23 @@ def test_strings_and_regex_page():
     at = run("pages/2_Strings_and_Regex.py")
     at.text_input[0].set_value("abc").run()
     assert not at.exception
+
+
+def test_translators_page_expressions():
+    at = run("pages/3_Translators.py")
+    at.slider(key="tr_step").set_value(3).run()
+    assert not at.exception
+    at.text_input(key="tr_expr_infix").set_value("a+*b").run()
+    assert not at.exception
+    assert at.error, "a syntax error should be shown"
+
+
+def test_translators_page_postfix_and_grammars():
+    at = run("pages/3_Translators.py")
+    at.segmented_control(key="tr_notation").set_value("postfix").run()
+    assert not at.exception
+    at.text_input(key="tr_roman").set_value("IIII").run()
+    assert not at.exception
+    for g in ("brackets", "lists", "div3"):
+        at.segmented_control(key="tr_grammar").set_value(g).run()
+        assert not at.exception

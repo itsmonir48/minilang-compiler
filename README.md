@@ -9,7 +9,7 @@ with step-by-step top-down and bottom-up parse traces.
 
 CIT 412 Compiler Design and Automata Theory Sessional.
 
-Status: Phase 1 (lexical analyzer) done. See [ROADMAP.md](ROADMAP.md).
+Status: Phase 2 (Chapter 2 translators) done. See [ROADMAP.md](ROADMAP.md).
 
 ## Setup
 
@@ -31,6 +31,11 @@ minilang tokens --buffer-size 8 --stats examples/scopes.mini
 minilang strings abcd                            # prefixes, suffixes, substrings, ...
 minilang regex                                   # list the regular definitions
 minilang regex no_abb abab abba
+minilang translate '9-5+2' --tree --trace          # infix -> postfix/prefix, annotated tree, 2.5 trace
+minilang translate '95-2+' --from postfix          # postfix -> infix/prefix
+minilang roman MCMXCIV --tree                      # Roman <-> integer (direction is detected)
+minilang check div3 --table 6                      # num -> 11 | 1001 | num 0 | num num
+minilang check brackets '([]){}'                   # balanced brackets
 make -C lex demo                                 # Flex programs (needs flex + gcc)
 python scripts/buffer_experiment.py              # writes docs/buffer_experiment.md
 ```

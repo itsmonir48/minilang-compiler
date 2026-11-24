@@ -171,11 +171,12 @@ Do not start the next phase until the current one works.
 - [x] Tests: every token type, line/col tracking, buffer reload at the boundary, errors
 
 ### Phase 2 — Ch 2 translators (2–3 days)
-- [ ] `translators.py`: recursive-descent SDT for infix → postfix (2.5), infix → prefix, postfix → infix, postfix → prefix (2.3)
-- [ ] Roman numerals ↔ integer with a grammar-based translator (2.2, 2.3)
-- [ ] Annotated parse tree printout (node + attribute value) for a given input
-- [ ] Small grammar checkers: binary strings divisible by 3, balanced brackets, left- vs right-associative lists
-- [ ] Tests
+- [x] `translators.py`: recursive-descent SDT for infix → postfix (2.5), infix → prefix, postfix → infix, postfix → prefix (2.3); also prefix input, unary minus (`~` in postfix/prefix), value with MiniLang semantics
+- [x] Roman numerals ↔ integer with a grammar-based translator (2.2, 2.3)
+- [x] Annotated parse tree printout (node + attribute value) for a given input (`tree.py`: ASCII + Graphviz)
+- [x] Small grammar checkers: binary strings divisible by 3, balanced brackets, left- vs right-associative lists
+- [x] CLI: `translate`, `roman`, `check`; web page **Translators** (annotated tree, 2.5 translator step by step)
+- [x] Tests (round trip between the three notations, all 3999 Roman numerals)
 
 ### Phase 3 — Grammar workbench, top-down (Chapter 4.2–4.4) (4–5 days)
 - [ ] `grammar.py`: load grammar from text (`E -> E + T | T`, `ε` / `eps`), augment, print
