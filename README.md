@@ -9,7 +9,7 @@ with step-by-step top-down and bottom-up parse traces.
 
 CIT 412 Compiler Design and Automata Theory Sessional.
 
-Status: Phase 3.5 (expression → parse tree) done. See [ROADMAP.md](ROADMAP.md).
+Status: Phase 3.5 (expression → parse tree) done. See [ROADMAP.md](ROADMAP.md). Full explanation of the project: [docs/PROJECT_GUIDE.md](docs/PROJECT_GUIDE.md).
 
 ## Setup
 
