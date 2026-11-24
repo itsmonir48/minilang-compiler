@@ -6,6 +6,7 @@ static const char *word[] = {"zero","one","two","three","four",
                              "five","six","seven","eight","nine"};
 %}
 %%
+[A-Za-z_][A-Za-z0-9_]*  { ECHO; }   /* words like cit412 stay unchanged */
 [0-9]+  { for (int i = 0; i < yyleng; i++)
               printf("%s%s", i ? "-" : "", word[yytext[i] - '0']); }
 .|\n    { ECHO; }
