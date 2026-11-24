@@ -1,0 +1,3 @@
+Room 42 is on floor 3.
+Write to lab.admin@example.edu or visit https://www.example.org/courses/cit412?id=7 today.
+Old page: http://example.com

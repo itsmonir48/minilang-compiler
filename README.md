@@ -9,7 +9,7 @@ with step-by-step top-down and bottom-up parse traces.
 
 CIT 412 Compiler Design and Automata Theory Sessional.
 
-Status: Phase 0 (setup) done. See [ROADMAP.md](ROADMAP.md).
+Status: Phase 1 (lexical analyzer) done. See [ROADMAP.md](ROADMAP.md).
 
 ## Setup
 
@@ -21,6 +21,19 @@ python3 -m venv .venv
 .venv/bin/minilang --version
 ```
 
+## Try it
+
+```bash
+minilang tokens examples/factorial.mini          # Lexeme | Token | Attribute table
+minilang tokens examples/lexer_errors.mini       # 4 lexical errors with line:col
+minilang tokens --buffer-size 8 --stats examples/scopes.mini
+minilang strings abcd                            # prefixes, suffixes, substrings, ...
+minilang regex                                   # list the regular definitions
+minilang regex no_abb abab abba
+make -C lex demo                                 # Flex programs (needs flex + gcc)
+python scripts/buffer_experiment.py              # writes docs/buffer_experiment.md
+```
+
 ## Layout
 
 | Path | Contents |
@@ -29,5 +42,6 @@ python3 -m venv .venv
 | `examples/` | sample `.mini` programs; `*.expected` holds the expected output of valid programs |
 | `tests/` | pytest tests; `tests/expected/` holds golden outputs (`pytest --update-golden` rewrites them) |
 | `grammars/` | grammar files for the workbench |
-| `lex/` | Flex versions of the scanners |
+| `lex/` | Flex programs (`make -C lex demo`) |
+| `scripts/` | experiment scripts; results go to `docs/` |
 | `docs/` | lab mapping and report |

@@ -84,6 +84,7 @@ MiniLang_Compiler/
 │   ├── buffer.py            buffer pair + sentinel reader (3.2)
 │   ├── lexer.py             transition-diagram lexer (3.1, 3.3, 3.4)
 │   ├── regex_tools.py       string terms + regular definitions (3.3)
+│   ├── report.py            plain-text / Markdown tables (used by every command)
 │   ├── ast_nodes.py         AST node classes + tree printer (2.8)
 │   ├── parser.py            recursive-descent parser + panic-mode recovery (2.4, 4.1, 4.4)
 │   ├── parse_tree.py        expression → concrete parse tree (ASCII + .dot) (2.2, 4.1, 4.2)
@@ -104,10 +105,9 @@ MiniLang_Compiler/
 │   │   ├── lr1.py           LR(1) items, canonical LR, LALR merge (4.7)
 │   │   ├── lr_parser.py     shared LR driver with trace + precedence rules (4.8)
 │   │   ├── bottomup.py      shift-reduce visualizer: handles, tree from leaves up (4.5–4.7)
-│   │   └── report.py        pretty tables (plain text / markdown)
 │   └── cli.py               command-line entry point
-├── lex/
-│   └── minilang.l           Flex version of the lexer (3.5), compared with lexer.py
+├── lex/                     Flex programs (3.5) + Makefile; built into lex/build/
+├── scripts/                 buffer_experiment.py → docs/buffer_experiment.md
 ├── yacc_calc/
 │   └── calc.py              PLY (Python Lex-Yacc) calculator with `error` recovery (4.9)
 ├── grammars/                expr.txt, dangling_else.txt, minilang.txt, lalr_demo.txt …
@@ -138,16 +138,17 @@ Do not start the next phase until the current one works.
 - [x] Write 4–5 example programs in `examples/` (valid + one with errors each for lexer, parser, semantic)
 
 ### Phase 1 — Lexical analyzer (Chapter 3) (3–4 days)
-- [ ] `tokens.py`: token types (ID, NUM, REAL, RELOP, keywords, operators, EOF), `Token(type, lexeme, value, line, col)`
-- [ ] `buffer.py`: two-half buffer with `eof` sentinels, `lexeme_begin` / `forward` pointers, `retract()`; small buffer size option to show reloads (3.2)
-- [ ] Buffer-size experiment: count reloads and time for sizes 16 … 4096 on one large file; save the table in `docs/` (3.2 trade-offs)
-- [ ] `lexer.py`: reads characters only through `buffer.py`; transition diagrams as explicit states for **id/keyword**, **num** (int, float, `1.5E-3`), **relop**; skip whitespace and comments; attribute values (index into a simple name table for ids, numeric value for numbers; scopes are handled later in Phase 5) (3.1, 3.4)
-- [ ] `tokens` command prints a `Lexeme | Token | Attribute` table, which answers "divide this code into lexemes" (3.1)
-- [ ] Lexical errors: illegal char, unterminated comment, bad number → message with `line:col`, then continue
-- [ ] `regex_tools.py` (3.3): prefixes / suffixes / substrings / subsequences of a string; Python `re` versions of the regular definitions from the question (vowels in order, ascending letters, no repeated digit, no `abb`, chess moves, case-insensitive SQL keywords, comments)
-- [ ] `lex/minilang.l`: Flex scanner for MiniLang (token name + attribute), built with `flex` + `gcc`, run on one example file
-- [ ] Small Flex programs (3.5): `wc.l` (chars/words/lines), `numbers.l` (spell out digits), `urls_emails.l` (extract URLs/emails), `strip_comments.l` (remove C/C++ comments)
-- [ ] Tests: every token type, line/col tracking, buffer reload at the boundary, errors
+- [x] `tokens.py`: token types (ID, NUM, REAL, RELOP, keywords, operators, EOF), `Token(type, lexeme, value, line, col)`
+- [x] `buffer.py`: two-half buffer with `eof` sentinels, `lexeme_begin` / `forward` pointers, `retract()`; small buffer size option to show reloads (3.2)
+- [x] Buffer-size experiment: count reloads and time for sizes 16 … 4096 on one large file; save the table in `docs/` (3.2 trade-offs)
+- [x] `lexer.py`: reads characters only through `buffer.py`; transition diagrams as explicit states for **id/keyword**, **num** (int, float, `1.5E-3`), **relop**; skip whitespace and comments; attribute values (index into a simple name table for ids, numeric value for numbers; scopes are handled later in Phase 5) (3.1, 3.4)
+- [x] `tokens` command prints a `Lexeme | Token | Attribute` table, which answers "divide this code into lexemes" (3.1)
+- [x] Lexical errors: illegal char, unterminated comment, bad number → message with `line:col`, then continue
+- [x] `regex_tools.py` (3.3): prefixes / suffixes / substrings / subsequences of a string; Python `re` versions of the regular definitions from the question (vowels in order, ascending letters, no repeated digit, no `abb`, chess moves, case-insensitive SQL keywords, comments)
+- [x] `lex/minilang.l`: Flex scanner for MiniLang (token name + attribute), built with `make -C lex`; a test checks that it gives the same tokens and positions as `lexer.py` (skipped without flex)
+- [x] Small Flex programs (3.5): `wc.l` (chars/words/lines), `numbers.l` (spell out digits), `urls_emails.l` (extract URLs/emails), `strip_comments.l` (remove C/C++ comments)
+- [x] CLI: `tokens file.mini [--buffer-size N] [--stats] [--md]`, `strings abc`, `regex [name] [strings...]`
+- [x] Tests: every token type, line/col tracking, buffer reload at the boundary, errors
 
 ### Phase 2 — Ch 2 translators (2–3 days)
 - [ ] `translators.py`: recursive-descent SDT for infix → postfix (2.5), infix → prefix, postfix → infix, postfix → prefix (2.3)

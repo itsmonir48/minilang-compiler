@@ -31,8 +31,9 @@ class CompileError(Exception):
         lines = source.splitlines()
         if self.line > len(lines):
             return header
-        text = lines[self.line - 1].expandtabs(4)
-        caret = " " * max(self.col - 1, 0) + "^"
+        raw = lines[self.line - 1]
+        text = raw.expandtabs(4)
+        caret = " " * len(raw[: max(self.col - 1, 0)].expandtabs(4)) + "^"
         return f"{header}\n    {text}\n    {caret}"
 
 

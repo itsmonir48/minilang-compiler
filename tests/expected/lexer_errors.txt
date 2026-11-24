@@ -1,0 +1,12 @@
+error[lexer] line 3, col 7: illegal character '@'
+    a = 5 @ 3;       // illegal character '@'
+          ^
+error[lexer] line 5, col 5: malformed number '1.5E+': expected a digit in the exponent
+    b = 1.5E+;       // bad number: exponent without digits
+        ^
+error[lexer] line 6, col 7: illegal character '#'
+    a = a # 1;       // illegal character '#'
+          ^
+error[lexer] line 7, col 1: unterminated comment
+    /* this comment is never closed
+    ^
