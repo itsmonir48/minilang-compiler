@@ -1,0 +1,25 @@
+/* Nested scopes, float arithmetic, integer division,
+   short-circuit operators and dangling else.
+   Expected output:
+   3
+   2
+   1.25
+   1
+   7
+*/
+int x, y;
+float f;
+x = 7;
+y = 2;
+{
+    int x;          // shadows the outer x
+    x = 3;
+    print(x);       // 3  (inner x)
+}
+print(x / y - 1);   // 2  (7 / 2 = 3 with integer division, minus 1)
+f = 5.0 / 4.0;
+print(f);           // 1.25
+if (y > 0 || x / 0 == 1)    // right side is never evaluated
+    if (y < 0) print(0);
+    else print(1);          // else belongs to the inner if
+print(x);           // 7  (outer x is unchanged)

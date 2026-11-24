@@ -1,0 +1,7 @@
+// Lexical errors. Expected: 4 errors (the last is the unterminated comment); the lexer keeps going after each one.
+int a;
+a = 5 @ 3;       // illegal character '@'
+float b;
+b = 1.5E+;       // bad number: exponent without digits
+a = a # 1;       // illegal character '#'
+/* this comment is never closed

@@ -1,0 +1,11 @@
+// Semantic errors. Expected: 3 errors and 1 warning.
+int a;
+float a;            // error: 'a' already declared in this scope
+b = 3;              // error: 'b' is not declared
+{
+    int c;
+    c = 1;
+}
+c = 2;              // error: 'c' is not declared here (its scope ended)
+int d;
+d = 2.5;            // warning: float value assigned to int 'd'

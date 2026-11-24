@@ -1,0 +1,8 @@
+// Syntax errors. Expected: 3 errors, found in one run by panic-mode recovery.
+int n; int fact;
+fact = 1 n = 2;          // missing ';' after 1
+while (n > 1 {           // missing ')'
+    fact = fact * ;      // missing operand
+    n = n - 1;
+}
+print(fact);

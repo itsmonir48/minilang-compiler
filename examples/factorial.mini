@@ -1,0 +1,9 @@
+// Factorial of 5 with a while loop.
+// Expected output: 120
+int n; int fact;
+n = 5; fact = 1;
+while (n > 1) {
+    fact = fact * n;
+    n = n - 1;
+}
+if (fact >= 100 && !(n == 0)) print(fact); else print(0);

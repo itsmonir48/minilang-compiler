@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+lex/lex.yy.c
+lex/minilang_lexer
+*.dot.png
+*.egg-info/
+build/
