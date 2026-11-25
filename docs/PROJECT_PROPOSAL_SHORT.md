@@ -73,8 +73,3 @@ Graphviz DOT (diagrams), Flex, PLY (Python Lex-Yacc), pytest, Git and GitHub.
 - **Parsers:** top-down and bottom-up parsers accept `id+id*id` and reject `id+*id`;
   SLR, canonical LR and LALR tables are compared on one grammar.
 - **Coverage and tests:** every lab topic is mapped to a component; all tests pass.
-
-## Reference
-
-A. V. Aho, M. S. Lam, R. Sethi, J. D. Ullman, *Compilers: Principles,
-Techniques, and Tools*, 2nd ed., Addison-Wesley, 2006.
