@@ -1,9 +1,9 @@
 # MiniLang Compiler Studio: Project Guide
 
-Course: CIT 412 Compiler Design and Automata Theory Sessional
-Textbook: Aho, Lam, Sethi, Ullman, *Compilers: Principles, Techniques, and Tools*, 2nd ed.
-(the "Dragon Book"). Section numbers below (3.2, 4.4, ...) refer to this book.
-Repository: https://github.com/itsmonir48/minilang-compiler
+- **Course:** CIT 412 Compiler Design and Automata Theory Sessional
+- **Textbook:** Aho, Lam, Sethi, Ullman, *Compilers: Principles, Techniques, and Tools*,
+  2nd ed. (the "Dragon Book"). Section numbers below (3.2, 4.4, ...) refer to this book.
+- **Repository:** https://github.com/itsmonir48/minilang-compiler
 
 This guide explains what the project does, how each part works, and why it was built
 this way. Section 13 lists likely viva questions with short answers.
