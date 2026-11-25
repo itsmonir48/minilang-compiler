@@ -74,10 +74,7 @@ Graphviz DOT (diagrams), Flex, PLY (Python Lex-Yacc), pytest, Git and GitHub.
   SLR, canonical LR and LALR tables are compared on one grammar.
 - **Coverage and tests:** every lab topic is mapped to a component; all tests pass.
 
-## 8. Conclusion
+## Reference
 
-MiniLang Compiler Studio brings the Chapter 2–4 lab topics together in one tool that
-compiles a small language and shows each textbook algorithm step by step.
-
-**Reference:** A. V. Aho, M. S. Lam, R. Sethi, J. D. Ullman, *Compilers: Principles,
+A. V. Aho, M. S. Lam, R. Sethi, J. D. Ullman, *Compilers: Principles,
 Techniques, and Tools*, 2nd ed., Addison-Wesley, 2006.
