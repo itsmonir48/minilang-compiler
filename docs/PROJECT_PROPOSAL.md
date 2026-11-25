@@ -1,11 +1,5 @@
 # Project Proposal: MiniLang Compiler Studio
 
-- **Course:** CIT 412 Compiler Design and Automata Theory Sessional
-- **Course teacher:** ____________________
-- **Submitted by:** ____________________ (ID: ____________)
-- **Repository:** https://github.com/itsmonir48/minilang-compiler
-
----
 
 ## 1. Introduction
 
