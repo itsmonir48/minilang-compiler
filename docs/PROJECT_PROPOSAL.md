@@ -9,10 +9,10 @@ Chapters 2 to 4 of *Compilers: Principles, Techniques, and Tools* (Aho, Lam, Set
 Ullman; the "Dragon Book") describe these phases with algorithms such as transition
 diagrams, FIRST and FOLLOW sets, LL(1) tables and LR parsing tables.
 
-This project proposes **MiniLang Compiler Studio**: a compiler for a small C-like
-language, **MiniLang**, written in Python. Next to the compiler is a **grammar
-workbench** that runs the Chapter 2–4 algorithms step by step. Both are used through a
-**web interface** in the browser and through a command-line tool, `minilang`.
+This project proposes MiniLang Compiler Studio: a compiler for a small C-like
+language, MiniLang, written in Python. Next to the compiler is a grammar workbench that
+runs the Chapter 2–4 algorithms step by step. Both are used through a web interface in
+the browser and through a command-line tool, `minilang`.
 
 ## 2. Problem statement
 
@@ -68,7 +68,7 @@ step by step and is checked by automated tests.
    - LR(0), SLR, canonical LR(1) and LALR tables;
    - bottom-up parsers;
    - a Yacc-style calculator.
-5. Show every algorithm **step by step** in a web interface, with pictures of trees,
+5. Show every algorithm step by step in a web interface, with pictures of trees,
    diagrams and tables.
 6. Verify the results with automated tests, including answers printed in the textbook.
 
@@ -82,7 +82,7 @@ step by step and is checked by automated tests.
   - relational operators `< <= > >= == !=`;
   - logical operators `&& || !`;
   - `if / else`, `while`, nested `{ }` blocks, `print`, and comments.
-- **All lab topics** of the three question files: Chapter 2, Chapter 3 and Chapter 4
+- **Lab topics:** all topics of the three question files: Chapter 2, Chapter 3 and Chapter 4
   (sections 4.1 to 4.9).
 - **Interfaces:** a web interface and a command-line interface over the same engine.
 
@@ -210,8 +210,8 @@ The detailed plan with checklists is in `ROADMAP.md` in the repository.
 1. **A working compiler:** `minilang run examples/factorial.mini` prints `120`. A
    program with several errors reports all of them with line numbers, without
    crashing.
-2. **A web interface** with one page per topic, every page working on every example.
-3. **A command-line tool** whose commands print the same tables and traces. With
+2. **Web interface:** one page per topic, every page working on every example.
+3. **Command-line tool:** its commands print the same tables and traces. With
    `--md`, they print as Markdown for the report.
 4. **Parser checks:**
    - Top-down and bottom-up parsers both accept `id+id*id` and reject `id+*id` with a
@@ -224,13 +224,13 @@ The detailed plan with checklists is in `ROADMAP.md` in the repository.
    - a lab mapping document (every question topic → file → demo command);
    - a final report;
    - a demo script for the viva.
-6. **An automated test suite**, run on every push.
+6. **Test suite:** automated tests, run on every push.
 
 ## 10. Evaluation
 
 The project is complete when the definition of done in `ROADMAP.md` holds:
 
-- **All tests pass,** locally and on GitHub Actions.
+- **Tests:** all tests pass, locally and on GitHub Actions.
 - **Textbook answers are reproduced:**
   - the FIRST/FOLLOW sets of Example 4.30;
   - the LL(1) table of Fig. 4.17 and the trace of Fig. 4.21;
@@ -238,7 +238,7 @@ The project is complete when the definition of done in `ROADMAP.md` holds:
   - the LR tables of the textbook grammars.
 - **Programs run correctly:** every example program prints its expected output, stored
   in `examples/*.expected`.
-- **Every lab topic is shown** in `docs/lab_mapping.md`.
+- **Lab mapping:** every lab topic is shown in `docs/lab_mapping.md`.
 - **The demo works:** the web interface opens, and the demo script runs from start to
   end without an error.
 
