@@ -1,5 +1,7 @@
 # Project Proposal: MiniLang Compiler Studio
 
+*A MiniLang compiler with a step-by-step workbench for the algorithms of Chapters 2–4*
+
 ## 1. Introduction
 
 Chapters 2 to 4 of *Compilers: Principles, Techniques, and Tools* (Aho, Lam, Sethi,
@@ -67,9 +69,9 @@ Graphviz DOT (diagrams), Flex, PLY (Python Lex-Yacc), pytest, Git and GitHub.
 
 ## 7. Expected outcomes
 
-- **Compiler:** `minilang run examples/factorial.mini` prints `120`, and a program with
+- **Compiler:** The command `minilang run examples/factorial.mini` prints `120`, and a program with
   several errors reports all of them with line numbers.
-- **Web interface:** one page per lab topic, with step-by-step views.
-- **Parsers:** top-down and bottom-up parsers accept `id+id*id` and reject `id+*id`;
+- **Web interface:** One page per lab topic, with step-by-step views.
+- **Parsers:** Top-down and bottom-up parsers accept `id+id*id` and reject `id+*id`;
   SLR, canonical LR and LALR tables are compared on one grammar.
-- **Coverage and tests:** every lab topic is mapped to a component; all tests pass.
+- **Coverage and tests:** Every lab topic is mapped to a component; all tests pass.
