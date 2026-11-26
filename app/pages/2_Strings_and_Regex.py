@@ -3,12 +3,13 @@
 import streamlit as st
 
 from minilang import regex_tools as rt
-from ui_common import setup_page
+from ui_common import setup_page, page_header
 
 setup_page("Strings & Regex")
-st.title("Strings and Regular Definitions")
-st.caption("Chapter 3.3 · prefixes, suffixes, substrings, subsequences · regular definitions "
-           "from the lab sheet")
+page_header('Chapter 3 · Lexical analysis',
+            'Strings and Regular Definitions',
+            'Prefixes, suffixes, substrings and subsequences of a string, and the regular definitions of the lab sheet.',
+            ['3.3.1 Strings and languages', '3.3.4 Regular definitions'])
 
 tab_strings, tab_regex = st.tabs(["String terms", "Regular definitions"])
 

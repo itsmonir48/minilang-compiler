@@ -53,7 +53,7 @@ python scripts/buffer_experiment.py              # writes docs/buffer_experiment
 | Path | Contents |
 |---|---|
 | `minilang/` | the compiler and workbench package (engine) |
-| `app/` | web interface (Streamlit), started with `minilang ui` |
+| `app/` | web interface (Streamlit), started with `minilang ui`: `Home.py` (navigation by chapter), `overview.py` (home page), `pages/`, `static/logo.svg` |
 | `examples/` | sample `.mini` programs; `*.expected` holds the expected output of valid programs |
 | `tests/` | pytest tests; `tests/expected/` holds golden outputs (`pytest --update-golden` rewrites them) |
 | `grammars/` | grammar files for the workbench |

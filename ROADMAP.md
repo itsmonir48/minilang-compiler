@@ -110,7 +110,7 @@ MiniLang_Compiler/
 │   │   ├── lr_parser.py     shared LR driver with trace + precedence rules (4.8)
 │   │   ├── bottomup.py      shift-reduce visualizer: handles, tree from leaves up (4.5–4.7)
 │   └── cli.py               command-line entry point
-├── app/                     web interface (Streamlit): Home.py, pages/, diagrams.py, ui_common.py
+├── app/                     web interface (Streamlit): Home.py (navigation), overview.py, pages/, diagrams.py, ui_common.py, static/
 ├── .streamlit/config.toml   theme
 ├── lex/                     Flex programs (3.5) + Makefile; built into lex/build/
 ├── scripts/                 buffer_experiment.py → docs/buffer_experiment.md

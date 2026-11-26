@@ -9,13 +9,13 @@ from minilang.grammar import topdown as td
 from minilang.grammar.grammar import tokenize_input
 from minilang.grammar.ll1 import build_ll1, input_text, node_at
 from minilang.tree import Node, to_dot
-from ui_common import grammar_editor, ll1_table_html, setup_page, trace_html
+from ui_common import grammar_editor, ll1_table_html, setup_page, trace_html, page_header
 
 setup_page("Top-Down Parsing")
-st.title("Top-Down Parsing")
-st.caption("Chapter 4.4 · backtracking recursive descent (4.4.1) · predictive recursive "
-           "descent · table-driven LL(1) parser (4.4.4). The parse tree grows from the root "
-           "down, in leftmost-derivation order.")
+page_header('Chapter 4 · Syntax analysis',
+            'Top-Down Parsing',
+            'Three top-down parsers on the same grammar and input, step by step; the parse tree grows from the root down in leftmost-derivation order.',
+            ['4.4.1 Recursive descent', '4.4.1 Backtracking', '4.4.4 Table-driven LL(1)'])
 
 SAMPLES = {
     "expr": "id+id*id", "expr_ll1": "id+id*id", "expr_ambiguous": "id+id*id",

@@ -47,6 +47,36 @@ table.ll1 th, table.ll1 td {border: 1px solid #dee2e6; padding: 4px 8px; text-al
 table.ll1 th {background: #f1f3f5;}
 table.ll1 td.conflict {background: #ffe3e3; color: #c92a2a; font-weight: 600;}
 table.ll1 td.hit {background: #fff3bf; outline: 2px solid #f08c00;}
+/* ---- layout and page chrome ---- */
+.block-container {padding-top: 3.4rem; max-width: 1280px;}
+.page-head {padding: 0 0 14px; margin: 0 0 18px; border-bottom: 1px solid #e2e7ef;}
+.page-head .eyebrow {font-size: 12px; font-weight: 700; letter-spacing: .13em;
+  text-transform: uppercase; color: #2b5fb3;}
+.page-head .ph-title {font-size: 2.05rem; font-weight: 700; color: #0f1f3d;
+  line-height: 1.2; margin: 4px 0 6px; letter-spacing: -0.01em;}
+.page-head .ph-desc {color: #5b6474; font-size: 1rem; margin: 0 0 10px; max-width: 900px;}
+.chip {display: inline-block; padding: 2px 10px; margin: 0 6px 4px 0; border-radius: 999px;
+  background: #eef3fb; color: #2b5fb3; border: 1px solid #d6e2f5; font-size: 12px;
+  font-weight: 600;}
+.hero {background: linear-gradient(120deg, #0f1f3d 0%, #1d3a70 60%, #2b5fb3 100%);
+  border-radius: 14px; padding: 30px 34px 26px; color: #e8eef8; margin-bottom: 18px;}
+.hero .eyebrow {font-size: 12px; font-weight: 700; letter-spacing: .15em;
+  text-transform: uppercase; color: #8cb4ff;}
+.hero .h-title {font-size: 2.5rem; font-weight: 750; color: #ffffff; margin: 6px 0 8px;
+  letter-spacing: -0.015em; line-height: 1.15;}
+.hero .h-text {font-size: 1.05rem; color: #c9d6ea; max-width: 820px; margin: 0 0 18px;
+  line-height: 1.55;}
+.hero .stats {display: flex; gap: 34px; flex-wrap: wrap; border-top: 1px solid #34507f;
+  padding-top: 14px;}
+.hero .stat .v {font-size: 1.6rem; font-weight: 700; color: #ffffff; line-height: 1.1;}
+.hero .stat .l {font-size: 12px; color: #9fb3d4; text-transform: uppercase;
+  letter-spacing: .08em;}
+.card-tag {font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  color: #2b5fb3;}
+.card-title {font-size: 1.12rem; font-weight: 700; color: #0f1f3d; margin: 2px 0 4px;}
+.card-text {font-size: 0.92rem; color: #5b6474; min-height: 4.2em; line-height: 1.5;}
+.section-title {font-size: 1.15rem; font-weight: 700; color: #0f1f3d; margin: 8px 0 2px;}
+.section-sub {font-size: 0.92rem; color: #5b6474; margin-bottom: 10px;}
 .buf tr.half td {border: none; font-size: 11px; color: #495057; background: transparent;}
 </style>
 """
@@ -55,9 +85,25 @@ KEYWORD_TYPES = {T.INT, T.FLOAT, T.IF, T.ELSE, T.WHILE, T.PRINT}
 OP_TYPES = {T.RELOP, T.PLUS, T.MINUS, T.STAR, T.SLASH, T.ASSIGN, T.AND, T.OR, T.NOT}
 
 
+LOGO = Path(__file__).resolve().parent / "static" / "logo.svg"
+
+
 def setup_page(title: str) -> None:
-    st.set_page_config(page_title=f"{title} · MiniLang", page_icon="🛠️", layout="wide")
+    st.set_page_config(page_title=f"{title} · MiniLang Compiler Studio",
+                       page_icon=":material/terminal:", layout="wide")
     st.markdown(CSS, unsafe_allow_html=True)
+
+
+def page_header(eyebrow: str, title: str, description: str,
+                chips: list[str] | None = None) -> None:
+    """The same header on every page: chapter label, title, one-line description and the
+    textbook sections the page covers."""
+    chip_html = "".join(f'<span class="chip">{html.escape(c)}</span>' for c in chips or [])
+    st.markdown(
+        f'<div class="page-head"><div class="eyebrow">{html.escape(eyebrow)}</div>'
+        f'<div class="ph-title">{html.escape(title)}</div>'
+        f'<div class="ph-desc">{html.escape(description)}</div>{chip_html}</div>',
+        unsafe_allow_html=True)
 
 
 def example_names() -> list[str]:

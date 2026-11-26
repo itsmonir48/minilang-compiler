@@ -23,8 +23,15 @@ def run(page: str) -> AppTest:
 
 
 def test_home():
+    """Home.py is the navigation entry point; its default page is overview.py."""
     at = run("Home.py")
-    assert "MiniLang Compiler Studio" in at.title[0].value
+    assert any("MiniLang Compiler Studio" in m.value for m in at.markdown)
+
+
+def test_overview_page():
+    at = run("overview.py")
+    text = " ".join(m.value for m in at.markdown)
+    assert "Explore" in text and "Compiler pipeline" in text
 
 
 def test_lexer_page_default_example():

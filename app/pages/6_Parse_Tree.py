@@ -6,12 +6,13 @@ from minilang.errors import CompileError
 from minilang.parse_tree import (EXPR_GRAMMAR, derivation_lines, parse_expression,
                                  partial_tree)
 from minilang.tree import Node, to_dot
-from ui_common import setup_page
+from ui_common import setup_page, page_header
 
 setup_page("Parse Tree")
-st.title("Expression → Parse Tree")
-st.caption("Chapter 2.2 / 4.2 · parse trees, leftmost and rightmost derivations · "
-           "Chapter 2.8 · parse tree vs. syntax tree (AST)")
+page_header('Chapter 2 · Syntax-directed translation',
+            'Expression → Parse Tree',
+            'Type an expression and see its parse tree and syntax tree side by side, with the leftmost and rightmost derivations step by step.',
+            ['2.2 Parse trees', '2.8 Syntax trees', '4.2 Derivations'])
 
 EXAMPLES = ["a + b * (c - 2)", "9 - 5 + 2", "a + b * c", "(a + b) * c", "x / y / z",
             "a + * b"]

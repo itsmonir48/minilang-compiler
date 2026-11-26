@@ -9,12 +9,13 @@ from minilang.grammar.first_follow import first_follow, fmt_set
 from minilang.grammar.grammar import tokenize_input
 from minilang.grammar.ll1 import build_ll1
 from minilang.tree import to_dot
-from ui_common import grammar_editor, ll1_table_html, setup_page
+from ui_common import grammar_editor, ll1_table_html, setup_page, page_header
 
 setup_page("Grammar Workbench")
-st.title("Grammar Workbench")
-st.caption("Chapter 4 · derivations and ambiguity (4.2) · left recursion and left factoring "
-           "(4.3) · FIRST, FOLLOW and the LL(1) table (4.4)")
+page_header('Chapter 4 · Syntax analysis',
+            'Grammar Workbench',
+            'Load or write a grammar and analyse it: derivations and ambiguity, the language L(G), left recursion, left factoring, FIRST/FOLLOW and the LL(1) table.',
+            ['4.2 Derivations and ambiguity', '4.3 Writing a grammar', '4.4 FIRST, FOLLOW, LL(1)'])
 
 SAMPLES = {
     "expr": "id+id*id", "expr_ll1": "id+id*id", "expr_ambiguous": "id+id*id",
@@ -36,18 +37,20 @@ rec = tf.left_recursive(g)
 
 with right:
     m1, m2, m3 = st.columns(3)
-    m1.metric("Nonterminals", len(g.nonterminals))
-    m2.metric("Terminals", len(g.terminals))
-    m3.metric("Productions", len(g.productions))
+    m1.metric("Nonterminals", len(g.nonterminals), border=True)
+    m2.metric("Terminals", len(g.terminals), border=True)
+    m3.metric("Productions", len(g.productions), border=True)
     m4, m5 = st.columns(2)
-    m4.metric("Left-recursive", "yes" if rec else "no")
-    m5.metric("LL(1)", "yes" if table.is_ll1 else f"no ({len(table.conflicts)} conflicts)")
+    m4.metric("Left-recursive", "yes" if rec else "no", border=True)
+    m5.metric("LL(1)", "yes" if table.is_ll1 else f"no ({len(table.conflicts)} conflicts)",
+              border=True)
     st.markdown(f"**Start symbol:** `{g.start}` · **Nonterminals:** "
                 + " ".join(f"`{a}`" for a in g.nonterminals) + " · **Terminals:** "
                 + " ".join(f"`{t}`" for t in g.terminals))
     st.markdown("**Productions**")
     st.dataframe([{"#": i, "Production": str(p)} for i, p in enumerate(g.productions)],
-                 hide_index=True, width="stretch", height=min(38 + 35 * len(g.productions), 280))
+                 hide_index=True, width="stretch", height=min(38 + 35 * len(g.productions), 280),
+                 column_config={"#": st.column_config.NumberColumn(width="small")})
 
 st.divider()
 tabs = st.tabs(["Derivations & ambiguity", "Language L(G)", "Left recursion", "Left factoring",

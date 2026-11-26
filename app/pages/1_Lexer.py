@@ -5,13 +5,14 @@ import streamlit as st
 from diagrams import DIAGRAMS, diagram_for_path, to_dot
 from minilang.lexer import Lexer
 from minilang.tokens import RELOP_TEXT, TokenType as T
-from ui_common import (LEGEND, buffer_html, errors_block, highlight_html, setup_page,
+from ui_common import (page_header, LEGEND, buffer_html, errors_block, highlight_html, setup_page,
                        source_editor, valid_cells)
 
 setup_page("Lexer")
-st.title("Lexical Analyzer")
-st.caption("Chapter 3 · tokens, lexemes and attributes (3.1) · buffer pair with sentinels (3.2) "
-           "· transition diagrams (3.4)")
+page_header('Chapter 3 · Lexical analysis',
+            'Lexical Analyzer',
+            'Write MiniLang code and watch it become tokens: attributes, the name table, lexical errors, the transition-diagram path of each token and the buffer pair.',
+            ['3.1 Tokens and attributes', '3.2 Buffer pairs and sentinels', '3.4 Transition diagrams'])
 
 left, right = st.columns([1, 1.2], gap="large")
 with left:
@@ -41,10 +42,10 @@ tokens = [s[0] for s in steps]
 
 with right:
     m1, m2, m3, m4 = st.columns(4)
-    m1.metric("Tokens", len(tokens) - 1)
-    m2.metric("Names", len(names))
-    m3.metric("Errors", len(errors))
-    m4.metric("Half reloads", reloads)
+    m1.metric("Tokens", len(tokens) - 1, border=True)
+    m2.metric("Names", len(names), border=True)
+    m3.metric("Errors", len(errors), border=True)
+    m4.metric("Half reloads", reloads, border=True)
     st.markdown(highlight_html(source, tokens, errors), unsafe_allow_html=True)
     st.markdown(LEGEND, unsafe_allow_html=True)
 

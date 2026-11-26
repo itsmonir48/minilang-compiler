@@ -7,12 +7,13 @@ import streamlit as st
 from minilang import translators as tr
 from minilang.errors import CompileError
 from minilang.tree import to_dot
-from ui_common import setup_page
+from ui_common import setup_page, page_header
 
 setup_page("Translators")
-st.title("Syntax-Directed Translators")
-st.caption("Chapter 2 · grammars and parse trees (2.2) · translation schemes and annotated "
-           "parse trees (2.3) · the infix → postfix translator (2.5)")
+page_header('Chapter 2 · Syntax-directed translation',
+            'Syntax-Directed Translators',
+            'Translate between infix, postfix and prefix with annotated parse trees, step through the 2.5 translator, and try the small grammars of Chapter 2.',
+            ['2.2 Syntax definition', '2.3 Translation schemes', '2.5 Infix → postfix'])
 
 
 def show_error(e: CompileError, text: str) -> None:
@@ -158,9 +159,10 @@ with tab_grammars:
             rows = tr.div3_table(max_len)
             members = [r for r in rows if r["in L(G)"]]
             m1, m2, m3 = st.columns(3)
-            m1.metric("Strings", len(rows))
-            m2.metric("In L(G)", len(members))
-            m3.metric("In L(G), not divisible", sum(not r["divisible by 3"] for r in members))
+            m1.metric("Strings", len(rows), border=True)
+            m2.metric("In L(G)", len(members), border=True)
+            m3.metric("In L(G), not divisible",
+                      sum(not r["divisible by 3"] for r in members), border=True)
             missed = [r for r in rows if r["divisible by 3"] and not r["in L(G)"]]
             no_lead = [r for r in missed if r["string"][0] == "1"]
             st.caption(
